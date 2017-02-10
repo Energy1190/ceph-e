@@ -1,0 +1,16 @@
+[Unit]
+Description=ceph-mon
+
+[Service]
+RestartForceExitStatus=1
+Restart=always
+RestartSec=1m
+EnvironmentFile=/etc/environment
+ExecStartPre=-/usr/bin/docker  pull intersoftlab/ceph-store-monitor:etcd
+ExecStartPre=$ETCDCTL_CMD --no-sync mk /deis/store/hosts/${HOST} $COREOS_HOSTNAME
+ExecStart=/bin/sh -c "docker run --rm --name store-monitor -e HOST=$HOST -e ETCD_PORT=2379 -e ETCD_HOST=172.17.42.1 --publish 6789 --net host intersoftlab/ceph-store-monitor:etcd"
+ExecStop=/bin/sh -c "docker kill store-monitor"
+ExecStopPost=$ETCDCTL_CMD --no-sync rm /deis/store/hosts/${HOST}
+
+[Install]
+WantedBy=multi-user.target
