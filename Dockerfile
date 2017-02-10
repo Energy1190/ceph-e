@@ -1,4 +1,4 @@
-FROM ceph/base
+FROM ceph/base:tag-build-master-jewel-ubuntu-16.04
 
 RUN apt-get update && apt-get -y install runit && \
 apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
